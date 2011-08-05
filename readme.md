@@ -17,9 +17,10 @@ and add the form ID to the *Salsa enabled forms* field.
 ### Groups
 
 To add supporters to groups, you can allow the user to select groups by
-adding a form field with the admin value `salsa_groups`.
+adding a checkbox form field with the admin value `salsa_groups`. The value
+for each checkbox must be set to the group key in Salsa.
 
-You can also add a hidden field called `salsa_groups` if you'd like to
+You can also add a hidden field called `salsa_group` if you'd like to
 add all supporters to a single Salsa group.
 
 Constraints
