@@ -115,8 +115,13 @@ function gf_salsa_logon() {
 }
 
 function gf_salsa_submit($entry, $form) {
+  $gf_salsa_options = get_option('gf_salsa_options');
   $salsa = gf_salsa_logon();
-  // TODO: Check if the form submitted is "Salsa enabled" and get the group
+
+  // Check if the form submitted is "Salsa enabled"
+  if(!in_array($form['id'], explode(',', $gf_salsa_options['salsa_enabled_forms']))) {
+    return;
+  }
 
   /* Iterate through form items to see if they have an admin value
    * if they do, submit them to salsa
