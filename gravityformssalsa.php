@@ -30,15 +30,79 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 include_once "salsa/salsa-core.php";
 
+add_action('init', 'gf_salsa_init');
+add_action('gform_post_submission', 'gf_salsa_submit', 10, 2);
+
+function gf_salsa_init() {
+  // Creates a Settings page on Gravity Forms' settings screen
+  RGForms::add_settings_page("Salsa", "gf_salsa_settings_page", plugins_url( 'images/salsa_logo.png', __FILE__ ));
+}
+
+function gf_salsa_settings_page() {
+  // Access control
+	if (!current_user_can('manage_options'))  {
+		wp_die( __('You do not have sufficient permissions to access this page.') );
+	}
+
+  // Process submitted options
+  if (isset($_POST['gf_salsa_hidden']) && $_POST['gf_salsa_hidden'] == 'Y'){
+    // CSRF check
+    check_admin_referer('gf_salsa_settings');
+
+    $salsa_username    = $_POST['salsa_username'];
+    $salsa_password    = $_POST['salsa_password']; // Should probably encrypt this
+    $salsa_url         = $_POST['salsa_url'];
+
+    $gf_salsa_options = array(
+        'salsa_username'    => $salsa_username,
+        'salsa_password'    => $salsa_password,
+        'salsa_url'         => $salsa_url
+    );
+    update_option('gf_salsa_options', $gf_salsa_options);
+
+    echo '<div class="updated"><p><strong>Options saved.</strong></p></div>';
+  }
+
+  // Get current options
+  $gf_salsa_options = get_option('gf_salsa_options');
+
+  // Render the settings page
+  ?>
+  <div class="wrap">
+    <h3>Salsa Account information</h3>
+    <form method="post" action="">
+      <input type="hidden" name="gf_salsa_hidden" value="Y" />
+      <?php wp_nonce_field('gf_salsa_settings'); ?>
+      <p>
+        Salsa Username<br />
+        <input type="text" name="salsa_username" value="<?php if (isset($gf_salsa_options['salsa_username'])) { echo $gf_salsa_options['salsa_username']; } ?>" size="26" />
+        <span class="description">Enter the Salsa username to access the API, this nornally your email address</span>
+      </p>
+
+      <p>
+        Salsa Password<br />
+        <input type="text" name="salsa_password" value="<?php if (isset($gf_salsa_options['salsa_password'])) { echo $gf_salsa_options['salsa_password']; } ?>" size="26" />
+        <span class="description">Enter your Salsa password that has access to the API</span><br /><br />
+        <span class="description"><strong>IMPORTANT:</strong> This password is stored and displayed in the settings as plain text, be sure not to use a valuable password</span>
+      </p>
+
+      <p>
+        Salsa URL<br />
+        <input type="text" name="salsa_url" value="<?php if(isset($gf_salsa_options['salsa_url'])) { echo $gf_salsa_options['salsa_url']; } ?>" size="26" />
+        <span class="description">Enter the base URL of your Salsa instance. It should looks something like <code>http://salsa.wiredforchange.com/</code></span>
+      </p>
+
+      <p class="submit">
+        <input type="submit" name="Submit" class="button-primary" value="Save Changes" />
+      </p>
+    </form>
+  </div>
+  <?php
+}
+
 // Authenticate and instantiate the Salsa connector
 function gf_salsa_logon() {
-  // Testing with hard coded values
-  //$gf_salsa_options = get_option('gf_salsa_options');
-  $gf_salsa_options = array(
-        'salsa_username'    => '',
-        'salsa_password'    => '',
-        'salsa_url'         => 'http://salsa.wiredforchange.com/'
-  );
+  $gf_salsa_options = get_option('gf_salsa_options');
 
   return GFSalsaConnector::initialize(
     $gf_salsa_options['salsa_url'],
@@ -46,8 +110,6 @@ function gf_salsa_logon() {
     $gf_salsa_options['salsa_password']
   );
 }
-
-add_action("gform_post_submission", "gf_salsa_submit", 10, 2);
 
 function gf_salsa_submit($entry, $form) {
   $salsa = gf_salsa_logon();
