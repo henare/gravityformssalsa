@@ -49,14 +49,11 @@ function gf_salsa_settings_page() {
     // CSRF check
     check_admin_referer('gf_salsa_settings');
 
-    $salsa_username = $_POST['salsa_username'];
-    $salsa_password = $_POST['salsa_password']; // Should probably encrypt this
-    $salsa_url      = $_POST['salsa_url'];
-
     $gf_salsa_options = array(
-        'salsa_username'    => $salsa_username,
-        'salsa_password'    => $salsa_password,
-        'salsa_url'         => $salsa_url
+        'salsa_username'      => $_POST['salsa_username'],
+        'salsa_password'      => $_POST['salsa_password'], // Should probably encrypt this
+        'salsa_url'           => $_POST['salsa_url'],
+        'salsa_enabled_forms' => $_POST['salsa_enabled_forms']
     );
     update_option('gf_salsa_options', $gf_salsa_options);
 
@@ -69,10 +66,16 @@ function gf_salsa_settings_page() {
   // Render the settings page
   ?>
   <div class="wrap">
-    <h3>Salsa Account information</h3>
+    <h3>Salsa integration settings</h3>
     <form method="post" action="">
       <input type="hidden" name="gf_salsa_hidden" value="Y" />
       <?php wp_nonce_field('gf_salsa_settings'); ?>
+      <h4>Salsa enabled forms</h4>
+      <p>
+        <input type="text" name="salsa_enabled_forms" value="<?php if (isset($gf_salsa_options['salsa_enabled_forms'])) { echo $gf_salsa_options['salsa_enabled_forms']; } ?>" size="26" />
+        <span class="description">Enter a comma-separated list of form IDs that should submit data to Salsa</span>
+      </p>
+      <h4>Salsa account settings</h4>
       <p>
         Salsa Username<br />
         <input type="text" name="salsa_username" value="<?php if (isset($gf_salsa_options['salsa_username'])) { echo $gf_salsa_options['salsa_username']; } ?>" size="26" />

@@ -9,7 +9,18 @@ Usage
 
 Create your Gravity Form as usual and then add admin values for form elements
 that you want saved to Salsa. These values should match the field names
-in Salsa (i.e. First_Name).
+in Salsa (i.e. *First_Name*).
+
+To get a form to submit data to Salsa, visit the add on's settings page
+and add the form ID to the *Salsa enabled forms* field.
+
+### Groups
+
+To add supporters to groups, you can allow the user to select groups by
+adding a form field with the admin value `salsa_groups`.
+
+You can also add a hidden field called `salsa_groups` if you'd like to
+add all supporters to a single Salsa group.
 
 Constraints
 -----------
