@@ -130,6 +130,11 @@ function gf_salsa_submit($entry, $form) {
     if($field['adminLabel']) {
       $p[$field['adminLabel']] = $entry[$field['id']];
     }
+
+    // Process hidden Salsa group field
+    if($field['label'] == 'salsa_group') {
+      $hidden_salsa_group = $entry[$field['id']];
+    }
   }
 
   // The Salsa object we want to save
@@ -138,11 +143,19 @@ function gf_salsa_submit($entry, $form) {
   $p['xml'] = true;
 
   // Submit the supporter to Salsa
-  $result = $salsa->post("/save", $p);
+  $supporter_result = $salsa->post("/save", $p);
 
-  if ($result->error) {
+  if ($supporter_result->error) {
     echo "Sorry, your details couldn't been saved. Please contact the site owner to report this problem.";
-  }else{
-    // TODO: Add supporter to groups
+    return;
+  }
+
+  // Process hidden Salsa group
+  if(isset($hidden_salsa_group)) {
+    $hg['xml'] = true;
+    $hg['object'] = "supporter_groups";
+    $hg['groups_KEY'] = $hidden_salsa_group;
+    $hg['supporter_KEY'] = $supporter_result->success->attributes()->key;
+    $salsa->post("/save", $hg);
   }
 }
