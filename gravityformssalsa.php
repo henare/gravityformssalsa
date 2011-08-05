@@ -127,7 +127,10 @@ function gf_salsa_submit($entry, $form) {
    * if they do, submit them to salsa
    */
   foreach($form['fields'] as $field) {
-    if($field['adminLabel']) {
+    // Check if a user-selectable list of groups is configured in this list
+    if($field['adminLabel'] == 'salsa_groups') {
+      $user_salsa_groups = $field['inputs'];
+    }elseif($field['adminLabel']){
       $p[$field['adminLabel']] = $entry[$field['id']];
     }
 
@@ -157,5 +160,19 @@ function gf_salsa_submit($entry, $form) {
     $hg['groups_KEY'] = $hidden_salsa_group;
     $hg['supporter_KEY'] = $supporter_result->success->attributes()->key;
     $salsa->post("/save", $hg);
+  }
+
+  // Process user selected Salsa groups
+  if(isset($user_salsa_groups)) {
+    $ug['xml'] = true;
+    $ug['object'] = "supporter_groups";
+    $ug['supporter_KEY'] = $supporter_result->success->attributes()->key;
+
+    foreach($user_salsa_groups as $input) {
+      if($entry[$input['id']]) {
+        $ug['groups_KEY'] = $entry[$input['id']];
+        $salsa->post("/save", $ug);
+      }
+    }
   }
 }
