@@ -30,9 +30,27 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 include_once "salsa/salsa-core.php";
 
+// Authenticate and instantiate the Salsa connector
+function gf_salsa_logon() {
+  // Testing with hard coded values
+  //$gf_salsa_options = get_option('gf_salsa_options');
+  $gf_salsa_options = array(
+        'salsa_username'    => '',
+        'salsa_password'    => '',
+        'salsa_url'         => 'http://salsa.wiredforchange.com/'
+  );
+
+  return GFSalsaConnector::initialize(
+    $gf_salsa_options['salsa_url'],
+    $gf_salsa_options['salsa_username'],
+    $gf_salsa_options['salsa_password']
+  );
+}
+
 add_action("gform_post_submission", "gf_salsa_submit", 10, 2);
 
 function gf_salsa_submit($entry, $form) {
+  $salsa = gf_salsa_logon();
   // TODO: Check if the form submitted is "Salsa enabled" and get the group
 
   /* Iterate through form items to see if they have an admin value
@@ -44,5 +62,17 @@ function gf_salsa_submit($entry, $form) {
     }
   }
 
-  var_dump($p);
+  // The Salsa object we want to save
+  $p['object'] = "supporter";
+  // Make the API return XML so we can parse it
+  $p['xml'] = true;
+
+  // Submit the supporter to Salsa
+  $result = $salsa->post("/save", $p);
+
+  if ($result->error) {
+    echo "Sorry, your details couldn't been saved. Please contact the site owner to report this problem.";
+  }else{
+    // TODO: Add supporter to groups
+  }
 }
