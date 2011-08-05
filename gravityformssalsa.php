@@ -40,9 +40,9 @@ function gf_salsa_init() {
 
 function gf_salsa_settings_page() {
   // Access control
-	if (!current_user_can('manage_options'))  {
-		wp_die( __('You do not have sufficient permissions to access this page.') );
-	}
+  if (!current_user_can('manage_options'))  {
+    wp_die( __('You do not have sufficient permissions to access this page.') );
+  }
 
   // Process submitted options
   if (isset($_POST['gf_salsa_hidden']) && $_POST['gf_salsa_hidden'] == 'Y'){
