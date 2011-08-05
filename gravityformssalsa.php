@@ -49,9 +49,9 @@ function gf_salsa_settings_page() {
     // CSRF check
     check_admin_referer('gf_salsa_settings');
 
-    $salsa_username    = $_POST['salsa_username'];
-    $salsa_password    = $_POST['salsa_password']; // Should probably encrypt this
-    $salsa_url         = $_POST['salsa_url'];
+    $salsa_username = $_POST['salsa_username'];
+    $salsa_password = $_POST['salsa_password']; // Should probably encrypt this
+    $salsa_url      = $_POST['salsa_url'];
 
     $gf_salsa_options = array(
         'salsa_username'    => $salsa_username,
