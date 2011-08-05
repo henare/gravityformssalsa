@@ -27,3 +27,22 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 */
+
+include_once "salsa/salsa-core.php";
+
+add_action("gform_post_submission", "gf_salsa_submit", 10, 2);
+
+function gf_salsa_submit($entry, $form) {
+  // TODO: Check if the form submitted is "Salsa enabled" and get the group
+
+  /* Iterate through form items to see if they have an admin value
+   * if they do, submit them to salsa
+   */
+  foreach($form['fields'] as $field) {
+    if($field['adminLabel']) {
+      $p[$field['adminLabel']] = $entry[$field['id']];
+    }
+  }
+
+  var_dump($p);
+}
