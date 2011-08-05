@@ -44,9 +44,6 @@ function gf_salsa_settings_page() {
 		wp_die( __('You do not have sufficient permissions to access this page.') );
 	}
 
-  // Get list of Gravity Forms
-  $forms = RGFormsModel::get_forms();
-
   // Process submitted options
   if (isset($_POST['gf_salsa_hidden']) && $_POST['gf_salsa_hidden'] == 'Y'){
     // CSRF check
@@ -69,40 +66,13 @@ function gf_salsa_settings_page() {
   // Get current options
   $gf_salsa_options = get_option('gf_salsa_options');
 
-  // Get list of Salsa Groups if the API password is set
-  if (isset($gf_salsa_options['salsa_password'])) {
-    $salsa = gf_salsa_logon();
-    $salsa_groups = $salsa->getObjects('groups');
-
-    // Eugh, I just want an array of groups, damnit
-    $salsa_groups = (array) $salsa_groups->groups;
-    $salsa_groups = $salsa_groups['item'];
-
-    // Create a reusable options list of Salsa Groups
-    $salsa_groups_option_list = '<option> -- None -- </option>';
-    foreach($salsa_groups as $group) {
-      $salsa_groups_option_list .= '<option value="' . $group->Group_Name . '">' . $group->Group_Name . '</option>';
-    }
-  }
-
   // Render the settings page
   ?>
   <div class="wrap">
-    <h3>Salsa integration settings</h3>
+    <h3>Salsa Account information</h3>
     <form method="post" action="">
       <input type="hidden" name="gf_salsa_hidden" value="Y" />
       <?php wp_nonce_field('gf_salsa_settings'); ?>
-      <h4>Salsa enabled forms</h4>
-      <p>These forms will submit data to Salsa and optionally add supporters to a group.</p>
-      <?php
-        foreach($forms as $form){
-          echo '<input type="checkbox" name="gf_salsa_form_'
-            . $form->id . '" value="true" />' . $form->title
-            . ' &mdash; Add supporters to group: <select name="gf_salsa_group_form_'. $form->id. '">'
-            . $salsa_groups_option_list . '</select><br />';
-        }
-      ?>
-      <h4>Salsa account settings</h4>
       <p>
         Salsa Username<br />
         <input type="text" name="salsa_username" value="<?php if (isset($gf_salsa_options['salsa_username'])) { echo $gf_salsa_options['salsa_username']; } ?>" size="26" />
