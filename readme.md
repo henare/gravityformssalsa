@@ -7,7 +7,7 @@ to be saved to Salsa and added to groups.
 Usage
 -----
 
-Create your Gravity Form as usual and then add admin values for form elements
+Create your Gravity Form as usual and then add Admin Labels for form elements
 that you want saved to Salsa. These values should match the field names
 in Salsa (i.e. *First_Name*).
 
